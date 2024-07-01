@@ -3,7 +3,7 @@
 ## Docker run
 
 ```bash
-docker run docker pull ghcr.io/coxde/phanpy-docker:latest
+docker run ghcr.io/coxde/phanpy-docker:latest
 ```
 
 ## Docker Compose
