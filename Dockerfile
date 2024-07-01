@@ -1,4 +1,4 @@
-from alpine:3.19 as builder
+from alpine:latest as builder
 
 ARG VERSION
 
@@ -7,10 +7,10 @@ run curl -sLO "https://github.com/cheeaun/phanpy/releases/download/${VERSION}/ph
   && mkdir /phanpy \
   && tar zxf phanpy-dist.tar.gz -C /phanpy
 
-from nginx:1.25.4-alpine
+from nginx:mainline-alpine-slim
 
 label maintainer="Victoria Nadasdi <efertone@pm.me>"
-label org.opencontainers.image.source=https://github.com/yitsushi/phanpy-docker
+label org.opencontainers.image.source=https://github.com/coxde/phanpy-docker
 label org.opencontainers.image.description="Unofficial Docker Image for Phanpy"
 label org.opencontainers.image.licenses=MIT
 
