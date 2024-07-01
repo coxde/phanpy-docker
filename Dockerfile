@@ -9,7 +9,6 @@ run curl -sLO "https://github.com/cheeaun/phanpy/releases/download/${VERSION}/ph
 
 from nginx:mainline-alpine-slim
 
-label maintainer="Victoria Nadasdi <efertone@pm.me>"
 label org.opencontainers.image.source=https://github.com/coxde/phanpy-docker
 label org.opencontainers.image.description="Unofficial Docker Image for Phanpy"
 label org.opencontainers.image.licenses=MIT
