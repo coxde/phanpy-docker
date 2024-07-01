@@ -12,7 +12,7 @@ docker run docker pull ghcr.io/coxde/phanpy-docker:latest
 ---
 services:
   phanpy:
-    image: docker pull ghcr.io/coxde/phanpy-docker:latest
+    image: ghcr.io/coxde/phanpy-docker:latest
     container_name: phanpy
     ports:
       - 8080:80
@@ -24,7 +24,7 @@ services:
 ---
 services:
   stable:
-    image: docker pull ghcr.io/coxde/phanpy-docker:latest
+    image: ghcr.io/coxde/phanpy-docker:latest
     networks:
       - traefik-public
     ports:
