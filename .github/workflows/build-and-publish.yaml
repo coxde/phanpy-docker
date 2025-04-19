@@ -70,7 +70,7 @@ jobs:
             latest
       - name: Build and push Docker image
         if: ${{ steps.tag_check.outputs.needs_update == 'true' }}
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           push: true
