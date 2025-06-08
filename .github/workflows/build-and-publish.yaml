@@ -8,6 +8,11 @@ on:
                 required: true
                 type: string
                 default: latest
+    pull_request:
+        branches:
+            - main
+        paths-ignore:
+            - "**.md"
     schedule:
         - cron: "30 4 * * 1" # At 04:30 on every Monday.
 
