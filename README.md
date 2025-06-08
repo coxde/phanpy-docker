@@ -1,4 +1,6 @@
-# Unofficial Phanpy Docker Image
+# Unofficial Phanpy Image
+
+[Phanpy](https://github.com/cheeaun/phanpy) is a minimalistic opinionated Mastodon/Fediverse web client.
 
 ## Docker run
 
@@ -18,12 +20,12 @@ services:
       - 8080:80
 ```
 
-## An example on Docker Stack
+## An example for Phanpy with Traefik (Docker)
 
 ```yaml
 ---
 services:
-  stable:
+  phanpy:
     image: ghcr.io/coxde/phanpy-docker:latest
     networks:
       - traefik-public
@@ -31,21 +33,37 @@ services:
       - 80
     deploy:
       labels:
-        - "homepage.group=Social"
-        - "homepage.icon=/icons/phanpy.png"
-        - "homepage.name=Phanpy"
-        - "homepage.href=https://phanpy.example.org/"
-        - "homepage.description=Alternative Mastodon Web Client"
-
         - "traefik.enable=true"
-        - "traefik.http.routers.phanpy-efertone-me.rule=Host(`phanpy.example.org`)"
-        - "traefik.http.services.phanpy-efertone-me.loadbalancer.server.port=80"
-        - "traefik.http.routers.phanpy-efertone-me.tls=true"
-        - "traefik.http.routers.phanpy-efertone-me.tls.certresolver=cloudflare"
-        - "traefik.http.routers.phanpy-efertone-me.entryPoints=http,https"
-        - "traefik.docker.network=traefik-public"
+        - "traefik.http.routers.phanpy.rule=Host(`phanpy.example.org`)"
+        - "traefik.http.routers.phanpy.entryPoints=websecure"
+        - "traefik.http.routers.phanpy.tls=true"
+        - "traefik.http.routers.phanpy.tls.certresolver=myresolver"
+        - "traefik.http.services.phanpy.loadbalancer.server.port=80"
 
 networks:
   traefik-public:
     external: true
+```
+## An example for Phanpy with Traefik (Podman)
+
+```ini
+[Container]
+ContainerName=phanpy
+Image=ghcr.io/coxde/phanpy-docker:latest
+AutoUpdate=registry
+
+NoNewPrivileges=true
+
+Label=traefik.enable=true
+Label=traefik.http.routers.phanpy.rule=Host(`phanpy.example.org`)
+Label=traefik.http.routers.phanpy.entrypoints=websecure
+Label=traefik.http.routers.phanpy.tls=true
+Label=traefik.http.routers.phanpy.tls.certresolver=myresolver
+Label=traefik.http.services.phanpy.loadbalancer.server.port=80
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target
 ```
