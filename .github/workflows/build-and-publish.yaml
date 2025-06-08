@@ -1,80 +1,80 @@
-name: Publish Docker image
+name: Publish Image
 
 on:
-  workflow_dispatch:
-    inputs:
-      phanpy_version:
-        description: Target Phanpy version
-        required: true
-        type: string
-        default: latest
-  schedule:
-    - cron: "0 */12 * * *"
+    workflow_dispatch:
+        inputs:
+            phanpy_version:
+                description: Target Phanpy Version
+                required: true
+                type: string
+                default: latest
+    schedule:
+        - cron: "30 4 * * 1" # At 04:30 on every Monday.
 
 env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
-  UPSTREAM: cheeaun/phanpy
+    REGISTRY: ghcr.io
+    IMAGE_NAME: ${{ github.repository }}
+    UPSTREAM: cheeaun/phanpy
 
 jobs:
-  build_and_push_to_registry:
-    name: "Build and Push to Registry: phanpy ${{ inputs.phanpy_version }}"
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: Check version
-        id: version
-        run: |
-          echo "### Status" >> ${GITHUB_STEP_SUMMARY}
+    build_and_push_to_registry:
+        name: "Build and Push to Registry: Phanpy ${{ inputs.phanpy_version }}"
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            packages: write
+        steps:
+            - name: Check Version
+              id: version
+              run: |
+                  echo "### Status" >> ${GITHUB_STEP_SUMMARY}
 
-          tag="${{ inputs.logLevel || 'latest' }}"
+                  tag="${{ inputs.logLevel || 'latest' }}"
 
-          if [[ "${tag}" == "latest" ]]; then
-            tag=$(curl -s https://api.github.com/repos/${UPSTREAM}/releases/latest \
-                  | jq --raw-output '.tag_name')
-          fi
+                  if [[ "${tag}" == "latest" ]]; then
+                    tag=$(curl -s https://api.github.com/repos/${UPSTREAM}/releases/latest \
+                          | jq --raw-output '.tag_name')
+                  fi
 
-          echo "value=${tag}" >> ${GITHUB_OUTPUT}
-          echo " - Tag: ${tag}" >> ${GITHUB_STEP_SUMMARY}
-      - uses: warjiang/setup-skopeo@main
-      - name: Check if tag needs_update
-        id: tag_check
-        run: |
-          if skopeo inspect docker://${REGISTRY}/${IMAGE_NAME}:${{ steps.version.outputs.value }}; then
-            echo ":green_square: We are up to date!" >> ${GITHUB_STEP_SUMMARY}
-            echo "needs_update=false" >> ${GITHUB_OUTPUT}
-          else
-            echo ":red_square: **Update required!**" >> ${GITHUB_STEP_SUMMARY}
-            echo "needs_update=true" >> ${GITHUB_OUTPUT}
-          fi
-      - name: Checkout repository
-        if: ${{ steps.tag_check.outputs.needs_update == 'true' }}
-        uses: actions/checkout@v4
-      - name: Log in to the Container registry
-        if: ${{ steps.tag_check.outputs.needs_update == 'true' }}
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Extract metadata for Docker
-        if: ${{ steps.tag_check.outputs.needs_update == 'true' }}
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            ${{ steps.version.outputs.value }}
-            latest
-      - name: Build and push Docker image
-        if: ${{ steps.tag_check.outputs.needs_update == 'true' }}
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          push: true
-          build-args: |
-            VERSION=${{ steps.version.outputs.value }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+                  echo "value=${tag}" >> ${GITHUB_OUTPUT}
+                  echo " - Tag: ${tag}" >> ${GITHUB_STEP_SUMMARY}
+            - uses: warjiang/setup-skopeo@main
+            - name: Check If Tag needs_update
+              id: tag_check
+              run: |
+                  if skopeo inspect docker://${REGISTRY}/${IMAGE_NAME}:${{ steps.version.outputs.value }}; then
+                    echo ":green_square: We are up to date!" >> ${GITHUB_STEP_SUMMARY}
+                    echo "needs_update=false" >> ${GITHUB_OUTPUT}
+                  else
+                    echo ":red_square: **Update required!**" >> ${GITHUB_STEP_SUMMARY}
+                    echo "needs_update=true" >> ${GITHUB_OUTPUT}
+                  fi
+            - name: Checkout Repository
+              if: ${{ steps.tag_check.outputs.needs_update == 'true' }}
+              uses: actions/checkout@v4
+            - name: Login to the Container Registry
+              if: ${{ steps.tag_check.outputs.needs_update == 'true' }}
+              uses: docker/login-action@v3
+              with:
+                  registry: ${{ env.REGISTRY }}
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+            - name: Extract Metadata
+              if: ${{ steps.tag_check.outputs.needs_update == 'true' }}
+              id: meta
+              uses: docker/metadata-action@v5
+              with:
+                  images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+                  tags: |
+                      ${{ steps.version.outputs.value }}
+                      latest
+            - name: Build and Push Image
+              if: ${{ steps.tag_check.outputs.needs_update == 'true' }}
+              uses: docker/build-push-action@v6
+              with:
+                  context: .
+                  push: true
+                  build-args: |
+                      VERSION=${{ steps.version.outputs.value }}
+                  tags: ${{ steps.meta.outputs.tags }}
+                  labels: ${{ steps.meta.outputs.labels }}
