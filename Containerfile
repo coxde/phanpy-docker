@@ -7,7 +7,7 @@ RUN curl -sLO "https://github.com/cheeaun/phanpy/releases/download/${VERSION}/ph
     && mkdir /phanpy \
     && tar zxf phanpy-dist.tar.gz -C /phanpy
 
-FROM nginx:mainline-alpine-slim@sha256:89646041831b5ec80a246920a94fc72cff5ec9366d256e56f750bd7c46ee7188
+FROM nginx:mainline-alpine-slim@sha256:389b9c9e8d6552c702f2c49cbcbf481a48be73621e7b63568c72969bde595eef
 
 LABEL org.opencontainers.image.source=https://github.com/coxde/phanpy-docker
 LABEL org.opencontainers.image.description="Unofficial Image for Phanpy"
