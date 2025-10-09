@@ -3,6 +3,7 @@
     extends: ['config:best-practices'],
     "packageRules": [
       {
+        "matchPackageNames": ["*"],
         "automerge": true,
         "automergeType": "branch"
       }
