@@ -3,7 +3,7 @@
     extends: ['config:best-practices'],
     "packageRules": [
       {
-        "matchPackageNames": ["*"],
+        "matchUpdateTypes": ['minor', 'patch', 'pin', 'pinDigest', 'digest'],
         "automerge": true,
         "automergeType": "branch"
       }
