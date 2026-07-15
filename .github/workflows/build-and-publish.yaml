@@ -46,7 +46,7 @@ jobs:
 
                   echo "value=${tag}" >> ${GITHUB_OUTPUT}
                   echo " - Tag: ${tag}" >> ${GITHUB_STEP_SUMMARY}
-            - uses: warjiang/setup-skopeo@main
+            - uses: warjiang/setup-skopeo@a020c26410a015e3cf2a30c4630b48b7c2b9146d # main
             - name: Check If Tag needs_update
               id: tag_check
               run: |
